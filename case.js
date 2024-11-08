@@ -29,6 +29,9 @@ const {
   DateTime
 } = require('luxon');
 const {
+  addXp
+} = require('./lib/leveling')
+const {
   exec
 } = require("child_process")
 const {
@@ -240,6 +243,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'creator:SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
+            xp: 0,
+            level: 1,
             limit: 9999999999999999999999999999999999999999999,
             point: 9999999999999999999999999999999999999999999,
             saldo: 9999999999999999999999999999999999999999999,
@@ -251,6 +256,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
+            xp: 0,
+            level: 1,
             limit: limit.premium,
             // Limit untuk pengguna premium
             point: limit.point,
@@ -265,6 +272,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
+            xp: 0,
+            level: 1,
             limit: limit.user,
             // Limit untuk pengguna normal
             point: limit.point,
@@ -867,7 +876,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             quoted: contactOwner, ephemeralExpiration: 86400
           });
 
-          reply(`Kode referral ${pakiry}${code2}${pakiry} telah dikirim ke ${target}. Anda kehilangan ${formatToRibuan(points2)} point, sisa point anda ${formatToRibuan(users[senders].point)}`);
+          reply(`Kode referral ${pakiry}${code2}${pakiry} telah dikirim ke @${target.split('@')[0]}. Anda kehilangan ${formatToRibuan(points2)} point, sisa point anda ${formatToRibuan(users[senders].point)}`);
         } else {
           // Jika target tidak valid
           reply('Target tidak valid. Silakan masukkan ID pengguna atau grup yang valid.');
@@ -2191,6 +2200,10 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }
         break;
       default:
+        if (command) {
+          if (!isVerified(senders)) return
+          addXp(reply, senders, 10)
+        }
         if (budy.startsWith('$')) {
           if (!isCreator) return
           exec(budy.slice(2), (err, stdout) => {
