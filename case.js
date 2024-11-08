@@ -29,7 +29,9 @@ const {
   DateTime
 } = require('luxon');
 const {
-  addXp
+  addXp,
+  getXpForLevel,
+  getRank
 } = require('./lib/leveling')
 const {
   exec
@@ -243,8 +245,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'creator:SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
-            xp: 0,
-            level: 1,
+            xp: 100000,
+            level: 100,
             limit: 9999999999999999999999999999999999999999999,
             point: 9999999999999999999999999999999999999999999,
             saldo: 9999999999999999999999999999999999999999999,
@@ -804,16 +806,66 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         'ᴏᴡɴᴇʀ': `${mons}On${mons}`,
       }
     };
+    function getXpBar(currentXp, xpForNextLevel, length = 10) {
+      const progress = Math.floor((currentXp / xpForNextLevel) * length);
+      const bar = '█'.repeat(progress) + '░'.repeat(length - progress); // '█' untuk progress, '░' untuk sisa
+      return bar;
+    }
+
+    // Menampilkan XP, persentase, dan progress bar
+    const expDisplay = users[sender]
+    ? (users[sender].xp !== undefined && users[sender].level !== undefined
+      ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia'): 'Pengguna tidak ditemukan';
     switch (command) {
       case 'cekidgc':
         if (!isCreator) return reply('Hanya untuk owner')
         if (!isGroup) {
           return reply('Perintah ini hanya dapat digunakan di dalam grup.');
         }
-
-        const groupId = m.chat; // Mendapatkan ID grup dari pesan
-        reply(`ID Grup ini adalah: ${groupId}`);
+        reply(`ID Grup ini adalah: ${m.chat}`);
         break;
+      case 'me':
+        let userStatus = {
+          '> [ `keuangan` ]': {
+            'Limit': users[sender]?.limit !== undefined ? `${formatToRibuan(users[sender].limit)}`: 0,
+            'Point': users[sender]?.point !== undefined ? formatToRibuan(users[sender].point): 0,
+            'Saldo': users[sender]?.saldo !== undefined ? formatToIDR(users[sender].saldo): 0
+          },
+          '> [ `statistik` ]': {
+            'Date Register': users[sender]?.dateAdded ? users[sender].dateAdded: 'Data tidak tersedia',
+            'Verify': users[sender]?.verified === true ? 'true': 'false',
+            'Role': isCreator ? 'Creator': (isPrem ? 'Premium': 'New Bie'),
+            'Exp': users[sender] && users[sender].xp !== undefined && users[sender].level !== undefined
+            ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia',
+            'Level': users[sender]?.level !== undefined ? users[sender].level: 'Data tidak tersedia',
+            'Grade': users[sender]?.level !== undefined ? getRank(users[sender].level): 'Data tidak tersedia'
+          }
+        };
+        let profilesp = await tiky.profilePictureUrl(m?.sender, 'image').catch(_ => 'https://telegra.ph/file/6880771a42bad09dd6087.jpg');
+        tiky.sendMessage(m.sender, {
+          document: fs.readFileSync('./database/Docu/PadilDev.docx'),
+          thumbnailUrl: profilesp,
+          mimetype: 'application/pdf',
+          fileLength: 99999,
+          pageCount: '80000',
+          fileName: global.filename,
+          caption: `${treeify.asTree(userStatus, true)}`,
+          contextInfo: {
+            mentionedJid: [m?.sender],
+            externalAdReply: {
+              showAdAttribution: true,
+              title: `${Styles('username')}: ${m?.pushName}`,
+              body: global.botname,
+              thumbnailUrl: profilesp,
+              sourceUrl: `https://wa.me/${senders.split('@')[0]}`,
+              mediaType: 1,
+              renderLargerThumbnail: true
+            }
+          }
+        }, {
+          quoted: contactOwner
+        })
+        break
       case 'buatkode':
       case 'sendkode':
       case 'sref':
@@ -982,7 +1034,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         break;
       case 'duck':
         if (!isVerified(senders)) {
-          return reply(`Kamu belum terverifikasi di dalam database sistem kami. Untuk mendapatkan akses penuh ke semua fitur, akun kamu harus diverifikasi terlebih dahulu oleh sistem.${readmore}Verifikasi ini dilakukan secara otomatis, namun jika terjadi keterlambatan atau masalah, harap tunggu beberapa saat atau hubungi tim dukungan kami untuk bantuan lebih lanjut.`);
+          return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`);
         }
         if (!text) return reply("Masukan query yang ingin anda cari")
 
@@ -1255,7 +1307,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }, timer)
         break
       case 'antibad': {
-        if (!isVerified(senders)) return reply(`Kamu belum terverifikasi di dalam database sistem kami. Untuk mendapatkan akses penuh ke semua fitur, akun kamu harus diverifikasi terlebih dahulu oleh sistem.${readmore}Verifikasi ini dilakukan secara otomatis, namun jika terjadi keterlambatan atau masalah, harap tunggu beberapa saat atau hubungi tim dukungan kami untuk bantuan lebih lanjut.`);
+        if (!isVerified(senders)) return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`);
         if (!isGroup) return reply('Perintah ini hanya bisa digunakan di grup.');
         if (!isBotAdmins) return reply('Bot harus jadi admin');
         if (!isPrem) return reply('Hanya untuk premium')
@@ -2200,9 +2252,13 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }
         break;
       default:
-        if (command) {
+        if (budy.startsWith(command)) {
           if (!isVerified(senders)) return
-          addXp(reply, senders, 10)
+          if (users[senders].xp == 100000) {
+            return true
+          } else {
+            addXp(reply, senders, 10)
+          }
         }
         if (budy.startsWith('$')) {
           if (!isCreator) return
