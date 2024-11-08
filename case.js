@@ -842,7 +842,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
           }
         };
         let profilesp = await tiky.profilePictureUrl(m?.sender, 'image').catch(_ => 'https://telegra.ph/file/6880771a42bad09dd6087.jpg');
-        tiky.sendMessage(m.sender, {
+        tiky.sendMessage(m.chat, {
           document: fs.readFileSync('./database/Docu/PadilDev.docx'),
           thumbnailUrl: profilesp,
           mimetype: 'application/pdf',
