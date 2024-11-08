@@ -245,7 +245,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'creator:SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
-            xp: 235000000,
+            xp: 1118033,
             level: 500,
             limit: 9999999999999999999999999999999999999999999,
             point: 9999999999999999999999999999999999999999999,
@@ -806,16 +806,68 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         'ᴏᴡɴᴇʀ': `${mons}On${mons}`,
       }
     };
-    function getXpBar(currentXp, xpForNextLevel, length = 10) {
-      const progress = Math.floor((currentXp / xpForNextLevel) * length);
-      const bar = '█'.repeat(progress) + '░'.repeat(length - progress); // '█' untuk progress, '░' untuk sisa
+    // Fungsi untuk membuat progress bar XP
+    function getXpBar(xp, xpNeeded, length = 10) {
+      const progress = Math.max(0, Math.min(length, Math.floor((xp / xpNeeded) * length)));
+      const bar = '█'.repeat(progress) + '░'.repeat(length - progress);
       return bar;
     }
 
+    if (!users[senders]) {
+      // Format tanggal menggunakan moment-timezone
+      let formattedDate = moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm');
+
+      // Buat pengguna baru dengan serial key
+      if (senders === '6285867760406@s.whatsapp.net') {
+        // Jika owner, berikan limit, point, dan saldo tak terbatas
+        users[senders] = {
+          verified: false,
+          serialKey: 'creator:SK-' + generateRandomSerialKey(),
+          dateAdded: formattedDate,
+          xp: 1118033,
+          level: 500,
+          limit: 9999999999999999999999999999999999999999999,
+          point: 9999999999999999999999999999999999999999999,
+          saldo: 9999999999999999999999999999999999999999999,
+          usedReferral: [],
+        };
+      } else if (prem.checkPremiumUser(senders, premium)) {
+        // Jika user adalah premium
+        users[senders] = {
+          verified: false,
+          serialKey: 'SK-' + generateRandomSerialKey(),
+          dateAdded: formattedDate,
+          xp: 0,
+          level: 1,
+          limit: limit.premium,
+          // Limit untuk pengguna premium
+          point: limit.point,
+          // Point untuk pengguna premium
+          saldo: limit.saldo,
+          // Saldo untuk pengguna premium
+          usedReferral: [],
+        };
+      } else {
+        // Pengguna normal dengan limit dan point standar
+        users[senders] = {
+          verified: false,
+          serialKey: 'SK-' + generateRandomSerialKey(),
+          dateAdded: formattedDate,
+          xp: 0,
+          level: 1,
+          limit: limit.user,
+          // Limit untuk pengguna normal
+          point: limit.point,
+          // Point untuk pengguna normal
+          saldo: limit.saldo,
+          // Saldo untuk pengguna normal
+          usedReferral: [],
+        };
+      }
+    }
+
     // Menampilkan XP, persentase, dan progress bar
-    const expDisplay = users[sender]
-    ? (users[sender].xp !== undefined && users[sender].level !== undefined
-      ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia'): 'Pengguna tidak ditemukan';
+    const expDisplay = `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`;
     switch (command) {
       case 'cekidgc':
         if (!isCreator) return reply('Hanya untuk owner')
@@ -2255,7 +2307,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
       default:
         if (budy.startsWith(command)) {
           if (!isVerified(senders)) return
-          if (users[senders].xp == 100000) {
+          if (users[senders].xp == 235000000) {
             return true
           } else {
             addXp(reply, senders, 10)
