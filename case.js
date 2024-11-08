@@ -837,7 +837,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             'Role': isCreator ? 'Creator': (isPrem ? 'Premium': 'New Bie'),
             'Exp': users[sender] && users[sender].xp !== undefined && users[sender].level !== undefined
             ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia',
-            'Level': users[sender]?.level !== undefined ? users[sender].level: 'Data tidak tersedia',
+            'Level': users[sender]?.level !== undefined
+            ? (users[sender].level === 100 ? `${users[sender].level} (Max Level)`: users[sender].level): 'Data tidak tersedia',
             'Rank': users[sender]?.level !== undefined ? getRank(users[sender].level): 'Data tidak tersedia'
           }
         };
