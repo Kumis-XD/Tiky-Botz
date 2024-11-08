@@ -245,7 +245,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             verified: false,
             serialKey: 'creator:SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
-            xp: 100000,
+            xp: 235000000,
             level: 500,
             limit: 9999999999999999999999999999999999999999999,
             point: 9999999999999999999999999999999999999999999,
