@@ -246,7 +246,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             serialKey: 'creator:SK-' + generateRandomSerialKey(),
             dateAdded: formattedDate,
             xp: 100000,
-            level: 100,
+            level: 500,
             limit: 9999999999999999999999999999999999999999999,
             point: 9999999999999999999999999999999999999999999,
             saldo: 9999999999999999999999999999999999999999999,
@@ -836,7 +836,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             'Verify': users[sender]?.verified === true ? 'true': 'false',
             'Role': isCreator ? 'Creator': (isPrem ? 'Premium': 'New Bie'),
             'Exp': users[sender] && users[sender].xp !== undefined && users[sender].level !== undefined
-            ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 500)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia',
+            ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia',
             'Level': users[sender]?.level !== undefined
             ? (users[sender].level === 500 ? `${users[sender].level} (Max Level)`: users[sender].level): 'Data tidak tersedia',
             'Rank': users[sender]?.level !== undefined ? getRank(users[sender].level): 'Data tidak tersedia'
