@@ -2293,7 +2293,11 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
           fs.writeFileSync('./database/user.json', JSON.stringify(users, null, 2));
           fs.writeFileSync('./database/referrals.json', JSON.stringify(referralData, null, 2));
           reply(`Kode referral ${chihuyy}${code}${chihuyy} berhasil digunakan oleh @${senders.split('@')[0]}. Mendapatkan ${points} poin dan exp 5.`);
-          addXp(reply, sender, 5)
+          if (users[senders].xp == 100000) {
+            return true
+          } else {
+            addXp(reply, senders, 10)
+          }
           delete referralData[code];
         }
       }
