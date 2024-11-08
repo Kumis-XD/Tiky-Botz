@@ -838,7 +838,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             'Exp': users[sender] && users[sender].xp !== undefined && users[sender].level !== undefined
             ? `${users[sender].xp}/${getXpForLevel(users[sender].level)} (${Math.floor((users[sender].xp / getXpForLevel(users[sender].level)) * 100)}%) [${getXpBar(users[sender].xp, getXpForLevel(users[sender].level))}]`: 'Data XP atau level tidak tersedia',
             'Level': users[sender]?.level !== undefined ? users[sender].level: 'Data tidak tersedia',
-            'Grade': users[sender]?.level !== undefined ? getRank(users[sender].level): 'Data tidak tersedia'
+            'Rank': users[sender]?.level !== undefined ? getRank(users[sender].level): 'Data tidak tersedia'
           }
         };
         let profilesp = await tiky.profilePictureUrl(m?.sender, 'image').catch(_ => 'https://telegra.ph/file/6880771a42bad09dd6087.jpg');
@@ -1056,8 +1056,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         if (users[sender].point <= 0) {
           habis2()
         } else {
-          if (!text.includes(",")) {
-            return reply("Format salah. Gunakan format Teks,bahasa\n\n*Contoh :* I love you,id");
+          if (!text.includes(">")) {
+            return reply("Format salah. Gunakan format Teks,bahasa\n\n*Contoh :* I love you>id");
           }
 
           let [inputText,
