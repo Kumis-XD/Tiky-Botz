@@ -2279,12 +2279,6 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             return;
           }
 
-          // Cek jika pengguna mencoba menggunakan kode mereka sendiri
-          //             if (referralData[code].userId === senders) {
-          //                 reply("Anda tidak dapat menggunakan kode referral milik Anda sendiri.");
-          //                 return;
-          //             }
-
           if (!users[senders].usedReferrals) {
             users[senders].usedReferrals = []; // Membuat array jika `usedReferrals` belum ada
           }
@@ -2298,7 +2292,8 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
           // Simpan perubahan ke file JSON
           fs.writeFileSync('./database/user.json', JSON.stringify(users, null, 2));
           fs.writeFileSync('./database/referrals.json', JSON.stringify(referralData, null, 2));
-          reply(`Kode referral ${chihuyy}${code}${chihuyy} berhasil digunakan oleh @${senders.split('@')[0]}. Mendapatkan ${points} poin.`);
+          reply(`Kode referral ${chihuyy}${code}${chihuyy} berhasil digunakan oleh @${senders.split('@')[0]}. Mendapatkan ${points} poin dan exp 5.`);
+          addXp(reply, sender, 5)
           delete referralData[code];
         }
       }
