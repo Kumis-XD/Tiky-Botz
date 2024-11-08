@@ -844,11 +844,27 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
           }
 
           // Kirim kode referral ke grup atau pengguna
-          await tiky.sendMessage(target, {
-            text: `Halo! Kode referral ${pakiry}${code2}${pakiry} telah dibuat oleh @${senders.split('@')[0]} . Gunakan sekarang untuk klaim reward Anda!`,
+
+          await tiky.sendMessage(m.chat, {
+            document: fs.readFileSync("./package.json"),
+            fileName: global.filename,
+            fileLength: 99999999999999,
+            mimetype: 'application/pdf',
+            caption: `Halo! Kode referral ${pakiry}${code2}${pakiry} telah dibuat oleh @${senders.split('@')[0]} . Gunakan sekarang untuk klaim reward Anda!`,
+            isForwarded: false,
             contextInfo: {
-              mentionedJid: [senders]
+              mentionedJid: [senders],
+              externalAdReply: {
+                title: global.botname,
+                body: global.author,
+                showAdAttribution: true,
+                mediaType: 2,
+                thumbnail: fs.readFileSync('./thumbnail/thumbnail.jpg'),
+                sourceUrl: global.sourceurl
+              }
             }
+          }, {
+            quoted: contactOwner, ephemeralExpiration: 86400
           });
 
           reply(`Kode referral ${pakiry}${code2}${pakiry} telah dikirim ke ${target}. Anda kehilangan ${formatToRibuan(points2)} point, sisa point anda ${formatToRibuan(users[senders].point)}`);
@@ -976,7 +992,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         if (!isVerified(senders))
           return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`);
 
-        if (users[sender].point = 0) {
+        if (users[sender].point <= 0) {
           habis2()
         } else {
           if (!text.includes(",")) {
@@ -993,7 +1009,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         break;
       case 'cekip':
         if (!isVerified(senders)) return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`)
-        if (users[sender].point = 0) {
+        if (users[sender].point <= 0) {
           habis2()
         } else {
           if (!text) return reply('Masukan IP yang ingin anda cek')
@@ -1034,7 +1050,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         break
       case 'lirik':
         if (!isVerified(senders)) return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`)
-        if (users[sender].point = 0) {
+        if (users[sender].point <= 0) {
           habis2()
         } else {
           if (!text) return reply('Masukan nama lagu')
@@ -1362,7 +1378,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
       case 'gpt4':
         if (!isVerified(senders)) return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`)
         if (!text) return reply('Wrong query');
-        if (users[sender].limit = 0) {
+        if (users[sender].limit <= 0) {
           habis()
         } else {
           handlerLimit(senders, false);
@@ -1500,7 +1516,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         if (!text) return tiky.sendMessage(m.chat, {
           text: 'Mau nanya apa ke ChatGPT?'
         });
-        if (users[sender].limit = 0) {
+        if (users[sender].limit <= 0) {
           habis()
         } else {
           handlerLimit(senders, false);
@@ -2045,7 +2061,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }
 
         // Cek apakah limit pengguna sudah habis
-        if (users[sender].limit = 0) {
+        if (users[sender].limit <= 0) {
           habis()
         } else {
           // Cek apakah pengguna mengirimkan atau me-reply gambar
@@ -2101,7 +2117,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }
         if (!quoted) reply ('Apasih?')
         if (!/webp/.test(mime) && !/png/.test(mime) && !/jpg/.test(mime)) reply (`Balas sticker dengan caption *${command}*`)
-        if (users[sender].limit = 0) {
+        if (users[sender].limit <= 0) {
           habis()
         } else {
           handlerLimit(senders, false);
@@ -2136,7 +2152,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
         }
         if (!text) return reply('masukan text');
         if (text.length > 30) return reply('Maksimal 30 Teks!');
-        if (users[sender].limit = 0) {
+        if (users[sender].limit <= 0) {
           habis()
         } else {
           handlerLimit(senders, false);
@@ -2156,7 +2172,7 @@ module.exports = tiky = async (tiky, m, chatUpdate, store) => {
             return reply(`Nomor anda belum terverifikasi di bot kami, silahkan ketik \`verify\` untuk memverifikasi nomor anda.`);
           }
           if (!quoted) return reply(`Image Dengan Caption ${command}`);
-          if (users[sender].limit = 0) {
+          if (users[sender].limit <= 0) {
             habis()
           } else {
             handlerLimit(senders, false);

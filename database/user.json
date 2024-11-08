@@ -6,5 +6,14 @@
     "limit": 10,
     "point": 5,
     "usedReferral": []
+  },
+  "6285867760406@s.whatsapp.net": {
+    "verified": true,
+    "serialKey": "creator:SK-7CQD6S7BJNY9U58",
+    "dateAdded": "2024-11-07 22:45",
+    "limit": 1e+43,
+    "point": 1e+43,
+    "saldo": 1e+43,
+    "usedReferral": []
   }
 }
